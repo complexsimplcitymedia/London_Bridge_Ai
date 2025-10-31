@@ -1,0 +1,67 @@
+# Android
+*.apk
+*.ap_
+*.dex
+*.class
+bin/
+gen/
+out/
+build/
+.gradle/
+local.properties
+*.iml
+.idea/
+*.log
+*.swp
+.DS_Store
+captures/
+.externalNativeBuild
+.cxx
+
+# iOS
+xcuserdata/
+*.xcscmblueprint
+*.xccheckout
+DerivedData/
+build/
+Pods/
+*.pbxuser
+!default.pbxuser
+*.mode1v3
+!default.mode1v3
+*.mode2v3
+!default.mode2v3
+*.perspectivev3
+!default.perspectivev3
+*.xcworkspace
+!default.xcworkspace
+.DS_Store
+*.moved-aside
+
+# Dependencies
+node_modules/
+vendor/
+.bundle/
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.swp
+*~
+
+# Secrets and keys (NEVER commit)
+*.keystore
+*.jks
+*.p12
+*.mobileprovision
+*.cer
+*.certSigningRequest
+google-services.json
+GoogleService-Info.plist
+
+# IDE
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
