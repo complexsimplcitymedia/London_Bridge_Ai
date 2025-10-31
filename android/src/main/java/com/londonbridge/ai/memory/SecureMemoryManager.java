@@ -321,8 +321,25 @@ public class SecureMemoryManager {
         
         if (totalSize > maxSizeBytes) {
             Log.i(TAG, "Memory size exceeded, pruning old memories");
+            
+            // Sort files by last modified time (oldest first)
+            java.util.Arrays.sort(files, (f1, f2) -> 
+                Long.compare(f1.lastModified(), f2.lastModified()));
+            
             // Delete oldest files until under limit
-            // Implementation would sort by timestamp and delete oldest
+            for (File file : files) {
+                if (totalSize <= maxSizeBytes * 0.8) { // Keep 20% buffer
+                    break;
+                }
+                
+                long fileSize = file.length();
+                if (file.delete()) {
+                    totalSize -= fileSize;
+                    String id = file.getName().replace(".mem", "");
+                    removeFromMemoryIndex(id);
+                    Log.d(TAG, "Pruned old memory: " + id);
+                }
+            }
         }
     }
     

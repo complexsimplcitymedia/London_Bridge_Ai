@@ -97,9 +97,26 @@ public class PermissionGuard {
     // MARK: - Private Methods
     
     /// Verifies the code is running in a valid context
+    /// Provides basic protection against unauthorized access
     private func isValidContext() -> Bool {
-        // In production, implement context verification
-        // Check if running in foreground, valid bundle, etc.
+        // Verify we're running in a valid app context
+        guard let bundleIdentifier = Bundle.main.bundleIdentifier,
+              !bundleIdentifier.isEmpty else {
+            NSLog("[PermissionGuard] Invalid bundle identifier")
+            return false
+        }
+        
+        // Verify the app is properly signed
+        guard validateAppSignature() else {
+            NSLog("[PermissionGuard] Invalid app signature")
+            return false
+        }
+        
+        // Additional checks could include:
+        // - Verifying we're not running in a debugger (anti-tampering)
+        // - Checking for jailbreak detection
+        // - Validating entitlements
+        
         return true
     }
     

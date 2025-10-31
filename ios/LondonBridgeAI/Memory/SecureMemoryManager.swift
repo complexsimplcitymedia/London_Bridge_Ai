@@ -303,7 +303,43 @@ public class SecureMemoryManager {
         
         if stats.totalSizeBytes > maxSizeBytes {
             NSLog("[SecureMemoryManager] Memory size exceeded, pruning old memories")
-            // Implementation would sort by timestamp and delete oldest
+            
+            do {
+                var files = try fileManager.contentsOfDirectory(
+                    at: memoryDirectory,
+                    includingPropertiesForKeys: [.contentModificationDateKey, .fileSizeKey]
+                )
+                
+                // Sort by modification date (oldest first)
+                files.sort { file1, file2 in
+                    guard let date1 = try? file1.resourceValues(forKeys: [.contentModificationDateKey]).contentModificationDate,
+                          let date2 = try? file2.resourceValues(forKeys: [.contentModificationDateKey]).contentModificationDate else {
+                        return false
+                    }
+                    return date1 < date2
+                }
+                
+                var totalSize = stats.totalSizeBytes
+                let targetSize = Int64(Double(maxSizeBytes) * 0.8) // Keep 20% buffer
+                
+                // Delete oldest files until under limit
+                for fileURL in files where fileURL.pathExtension == "mem" {
+                    if totalSize <= targetSize {
+                        break
+                    }
+                    
+                    if let fileSize = try? fileURL.resourceValues(forKeys: [.fileSizeKey]).fileSize {
+                        try fileManager.removeItem(at: fileURL)
+                        totalSize -= Int64(fileSize)
+                        
+                        let id = fileURL.deletingPathExtension().lastPathComponent
+                        NSLog("[SecureMemoryManager] Pruned old memory: \(id)")
+                    }
+                }
+                
+            } catch {
+                NSLog("[SecureMemoryManager] Error during pruning: \(error)")
+            }
         }
     }
     
